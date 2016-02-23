@@ -40,7 +40,7 @@ private:
 	void lineRight( int l,int x,int y, int r, int g, int b,bool clip,int thick );
 	void Clip(bool noclip, int dx, int dy);
 	void scanKdb();
-	void Spawn(int entCount,int entType, int var, int r, int g, int b );
+	void Spawn(int entCount,int entType, int var, int r, int g, int b,int f );
 	void setUp();
 	void loadEnt();
 	void updateConsole();
@@ -73,6 +73,7 @@ private:
 	int entV[1000];
 	int entH[1000];
 	int entS[1000];
+	int entF[1000];
 	bool spawn;
 	int q;
 	bool spawned;
