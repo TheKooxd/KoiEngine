@@ -354,7 +354,7 @@ void Game::scanKdb()
 	
 }
 
-void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b)
+void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b, int f)
 {
 	while(entCount > 0)
 	{
@@ -373,9 +373,12 @@ void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b)
 			entG[i] = rand() % 255;
 			entB[i] = rand() % 255;
 			entV[i] = entVar;
+			entF[i] = f;
 			i = 1000;
 		}
 
+
+		
 
 		if (entId == 2)
 		{
@@ -415,9 +418,31 @@ void Game::loadEnt()
 		if (entMem[i] == 1)
 		
 		{
-			lineRight(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
-		
-			
+			if (entF[i] == 0)
+			{
+			lineUp(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 1)
+			{
+				lineRight(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 2)
+			{
+				lineDown(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 3)
+			{
+				lineLeft(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+
+			/*if (entF[i] < 3)
+			{
+			entF[i] = entF[i] + 1;
+			}
+			else
+			{
+				entF[i] = 0;
+			}*/
 		}
 
 		if (entMem[i] == 2)
@@ -490,24 +515,79 @@ void Game::loadEnt()
 			for(int k = 0; k<1000;k++)
 			{
 				
-				if(entMem[k] == 1)
+				if(entMem[k] == 1) 
 				{
-					//Spawn(1,2,255,255,255,0);
-					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + 30)
+					
+					if(entF[k] == 1)//right
 					{
-						if(entY[i] > entY[k] && entY[i] - 12 < entY[k])
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + entV[k])
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+						{
+							
+							entH[i] = 0;
+						}
+					}
+				}
+					
+					if(entF[k] == 3) //left
+					{
+					
+					if(entX[i] > entX[k] - entV[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+						{
+							lineUp(60,400,400,255,0,0,1,60);
+							//entH[i] = 0;
+						}
+					}
+				}
+
+						if(entF[k] == 0) //up
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] - 16 < entY[k] && entY[i] + entV[k] > entY[k])
 						{
 							entH[i] = 0;
 						}
 					}
 				}
+
+					if(entF[k] == 2) //down
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] - 16 < entY[k] + entV[k] && entY[i] > entY[k])
+						{
+							
+							entH[i] = 0;
+						}
+					}
+				}
+
+
+				
+				
+				}				
+				
+				
 			}
 
 
 			if(entH[i] == 0)
 			{
-				gameOver();
-
+				//gameOver();
+				entX[i] = 400;
+				entY[i] = 400;
+				entH[i] = 100;
 			}
 
 
@@ -563,8 +643,8 @@ void Game::setUp()
 	}
 
 	//Spawn(1,2,255,255,255,255);
-	Spawn(1,3,0,0,0,0);
-	Spawn(3,1,20,255,0,0);
+	Spawn(1,3,0,0,0,0,0);
+	Spawn(3,1,20,255,0,0,1);
 	
 }
 
