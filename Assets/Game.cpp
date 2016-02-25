@@ -20,11 +20,13 @@
  ******************************************************************************************/
 #include "Game.h"
 #include "time.h"
-
-static bool firstRun;
+#include <assert.h>
+static bool firstRun; //Intialize firstRun 
+static bool dev;
 Game::Game( HWND hWnd,const KeyboardServer& kServer )
 :	gfx ( hWnd ),
 	kbd( kServer ),
+	//==USER VARIABLE RESET==
 	x ( 100 ),
 	y ( 100 ),
 	b ( 100 ),
@@ -34,11 +36,12 @@ Game::Game( HWND hWnd,const KeyboardServer& kServer )
 	loaded ( false ),
 	f ( 1 ),
 	version ( 0.1 ),
-	temp ( 0 )
+	temp ( 0 ),
+	dev( true )
 	
 {}
 
-void Game::Go()
+void Game::Go() //MainLoop
 {
 	gfx.BeginFrame();
 	ComposeFrame();
@@ -354,8 +357,9 @@ void Game::scanKdb()
 	
 }
 
-void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b)
+void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b, int f)
 {
+	int check = 0;
 	while(entCount > 0)
 	{
 	for(int i = 0; i < 1000;i = i+1)
@@ -373,9 +377,12 @@ void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b)
 			entG[i] = rand() % 255;
 			entB[i] = rand() % 255;
 			entV[i] = entVar;
+			entF[i] = f;
 			i = 1000;
 		}
 
+
+		
 
 		if (entId == 2)
 		{
@@ -389,12 +396,21 @@ void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b)
 
 		if (entId == 3)
 		{
+	
 			entMem[i] = 3;
 			entH[i] = 100;
 			entS[i] = 5;
 			entX[i] = 400;
 			entY[i] = 400;
 			i = 1000;
+			if(entVar == 1)
+			{
+				
+				check = check + 1;
+				
+				entX[i] = rand() % 800+1;
+				entY[i] = rand() % 600+1;
+			}
 
 		}
 
@@ -415,9 +431,31 @@ void Game::loadEnt()
 		if (entMem[i] == 1)
 		
 		{
-			lineRight(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
-		
-			
+			if (entF[i] == 0)
+			{
+			lineUp(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 1)
+			{
+				lineRight(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 2)
+			{
+				lineDown(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+			if (entF[i] == 3)
+			{
+				lineLeft(entV[i],entX[i],entY[i],entR[i],entG[i],entB[i],false,1);
+			}
+
+			/*if (entF[i] < 3)
+			{
+			entF[i] = entF[i] + 1;
+			}
+			else
+			{
+				entF[i] = 0;
+			}*/
 		}
 
 		if (entMem[i] == 2)
@@ -433,7 +471,12 @@ void Game::loadEnt()
 
 		if (entMem[i] == 3) // Player Update
 		{
-		
+			
+		entS[i] = 5;
+		if(kbd.SpaceIsPressed())
+			{
+				entS[i] = 1;
+			}
 			if(kbd.RightIsPressed())
 			{
 				entX[i] = entX[i] + entS[i];
@@ -459,12 +502,7 @@ void Game::loadEnt()
 			{
 				setUp();
 			}
-
-			if(kbd.SpaceIsPressed())
-			{
-				entS[i] = 1;
-			}
-
+			
 
 			if(entX[i] < 12)
 			{
@@ -490,24 +528,77 @@ void Game::loadEnt()
 			for(int k = 0; k<1000;k++)
 			{
 				
-				if(entMem[k] == 1)
+				if(entMem[k] == 1) 
 				{
-					//Spawn(1,2,255,255,255,0);
-					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + 30)
+					
+					if(entF[k] == 1)//right
 					{
-						if(entY[i] > entY[k] && entY[i] - 12 < entY[k])
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + entV[k])
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+						{
+							
+							entH[i] = 0;
+						}
+					}
+				}
+					
+					if(entF[k] == 3) //left
+					{
+					
+					if(entX[i] > entX[k] - entV[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+						{
+							lineUp(60,400,400,255,0,0,1,60);
+							//entH[i] = 0;
+						}
+					}
+				}
+
+						if(entF[k] == 0) //up
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] - 16 < entY[k] && entY[i] + entV[k] > entY[k])
 						{
 							entH[i] = 0;
 						}
 					}
 				}
+
+					if(entF[k] == 2) //down
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] - 16 < entY[k] + entV[k] && entY[i] > entY[k])
+						{
+							
+							entH[i] = 0;
+						}
+					}
+				}
+
+
+				
+				
+				}				
+				
+				
 			}
 
 
 			if(entH[i] == 0)
 			{
 				gameOver();
-
+				
 			}
 
 
@@ -563,11 +654,31 @@ void Game::setUp()
 	}
 
 	//Spawn(1,2,255,255,255,255);
-	Spawn(1,3,0,0,0,0);
-	Spawn(3,1,20,255,0,0);
+	Spawn(1,3,1,0,0,0,0);
+	Spawn(1,1,20,255,0,0,1);
 	
 }
 
+
+void Game::verWatermark(int x, int y)
+{
+	gfx.PutPixel(x-2,y,188,188,188); //v
+	gfx.PutPixel(x-3,y-1,188,188,188);
+	lineUp(3,x-4,y-2,188,188,188,0,1);
+	lineUp(3,x  ,y-2,188,188,188,0,1);
+	gfx.PutPixel(x-1,y-1,188,188,188);
+
+	lineRight(1,x+3,y,188,188,188,0,1); //point
+
+	lineUp(5,x+7,y,188,188,188,0,1); //0
+	lineRight(3,x+7,y,188,188,188,0,1);
+	lineUp(5,x+10,y,188,188,188,0,1);
+	lineRight(4,x+7,y-5,188,188,188,0,1);
+
+	lineRight(1,x+13,y,188,188,188,0,1); //point
+
+	lineUp(6,x+16,y,188,188,188,0,1); //1
+}
 
 
 void Game::ComposeFrame()
@@ -580,6 +691,8 @@ void Game::ComposeFrame()
 
 	
 	loadEnt();
+	if(dev){verWatermark(10,7);}
 	
+	//lineRight(200,400,400,255,0,0,false,200);
     //writeGameOver();
 }
