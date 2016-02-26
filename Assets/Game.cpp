@@ -535,6 +535,11 @@ void Game::loadEnt()
 					{
 					
 					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + entV[k])
+<<<<<<< HEAD
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+=======
 					{
 						
 						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
@@ -566,11 +571,43 @@ void Game::loadEnt()
 					{
 						
 						if(entY[i] - 16 < entY[k] && entY[i] + entV[k] > entY[k])
+>>>>>>> origin/master
+						{
+							
+							entH[i] = 0;
+						}
+					}
+				}
+<<<<<<< HEAD
+					
+					if(entF[k] == 3) //left
+					{
+					
+					if(entX[i] > entX[k] - entV[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
+						{
+							lineUp(60,400,400,255,0,0,1,60);
+							//entH[i] = 0;
+						}
+					}
+				}
+
+						if(entF[k] == 0) //up
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
+					{
+						
+						if(entY[i] - 16 < entY[k] && entY[i] + entV[k] > entY[k])
 						{
 							entH[i] = 0;
 						}
 					}
 				}
+=======
+>>>>>>> origin/master
 
 					if(entF[k] == 2) //down
 					{
@@ -597,8 +634,15 @@ void Game::loadEnt()
 
 			if(entH[i] == 0)
 			{
+<<<<<<< HEAD
 				gameOver();
 				
+=======
+				//gameOver();
+				entX[i] = 400;
+				entY[i] = 400;
+				entH[i] = 100;
+>>>>>>> origin/master
 			}
 
 
@@ -654,8 +698,13 @@ void Game::setUp()
 	}
 
 	//Spawn(1,2,255,255,255,255);
+<<<<<<< HEAD
 	Spawn(1,3,1,0,0,0,0);
 	Spawn(1,1,20,255,0,0,1);
+=======
+	Spawn(1,3,0,0,0,0,0);
+	Spawn(3,1,20,255,0,0,1);
+>>>>>>> origin/master
 	
 }
 
