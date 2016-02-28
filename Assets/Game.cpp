@@ -19,8 +19,10 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #include "Game.h"
-#include "time.h"
+#include "Timer.h"
+#include "Bitmap.h"
 #include <assert.h>
+
 static bool firstRun; //Intialize firstRun 
 static bool dev;
 Game::Game( HWND hWnd,const KeyboardServer& kServer )
@@ -37,12 +39,19 @@ Game::Game( HWND hWnd,const KeyboardServer& kServer )
 	f ( 1 ),
 	version ( 0.1 ),
 	temp ( 0 ),
-	dev( true )
+	dev( true ),
+	a ( 0 ),
+	firstTime( true ),
+	stageNum ( 0 )
 	
-{}
+{
+
+
+}
 
 void Game::Go() //MainLoop
 {
+	
 	gfx.BeginFrame();
 	ComposeFrame();
 	gfx.EndFrame();
@@ -54,7 +63,7 @@ void Game::drawPlayerModel(int x, int y, int r, int g, int b)
 	gfx.PutPixel(x-5,y,0,0,0);
 	gfx.PutPixel(x-6,y,0,0,0);
 	gfx.PutPixel(x-7,y,0,0,0);
-
+	
 	gfx.PutPixel(x-3,y-1,0,0,0); //second row
 	gfx.PutPixel(x-4,y-1,255,255,255);
 	gfx.PutPixel(x-5,y-1,255,255,255);
@@ -318,45 +327,6 @@ void Game::lineRight(int l, int x, int y, int r, int g, int b, bool clip,int thi
 	y = y-1;
 	}
 }
-
-
-
-void Game::scanKdb()
-{
-
-	if(kbd.SpaceIsPressed())
-	{
-		
-		
-	}
-
-	if( kbd.EnterIsPressed())
-	{
-		setUp();
-	}
-
-	
-
-		if(kbd.RightIsPressed())
-	{
-		b = 0;
-		x = x + speed;
-	}
-
-	if(kbd.DownIsPressed())
-	{
-		b = 0;
-		y = y + speed;
-	}
-
-	if(kbd.LeftIsPressed())
-	{
-		b = 0;
-		x = x - speed;
-	}
-	
-}
-
 void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b, int f)
 {
 	int check = 0;
@@ -408,11 +378,22 @@ void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b, int f)
 				
 				check = check + 1;
 				
-				entX[i] = rand() % 800+1;
-				entY[i] = rand() % 600+1;
+				entX[i] = rand()%(750-50)+50;
+				entY[i] = rand()%(720-80)+80;
 			}
 
 		}
+
+		if (entId == 4)
+		{
+			
+			entMem[i] = 4;
+			entX[i] = rand()%(750-0)+0;
+			entY[i] = rand()%(520-0)+0;
+			entH[i] = 100;
+			i = 1000;
+		}
+
 
 	}
 		
@@ -425,7 +406,7 @@ void Game::Spawn(int entCount,int entId,int entVar, int r, int g, int b, int f)
 void Game::loadEnt()
 {
 	
-
+	
 	for(int i = 0; i<1000;i++)
 	{
 		if (entMem[i] == 1)
@@ -457,6 +438,43 @@ void Game::loadEnt()
 				entF[i] = 0;
 			}*/
 		}
+
+		if (entMem[i] == 4)
+		{
+			
+			bool seen = false;
+
+			if(entH[i] == 0)
+			{
+				entMem[i] = 0;
+			}
+
+			if(entX[i] > entX[0] - 400 && entX[i] < entX[0] + 400 && entY[i] > entY[0] - 300 && entY[i] < entY[0] + 300){seen = true;}
+
+			if(seen == true)
+			{
+			if(entX[0] - 20 > entX[i] && entX[i] < 750)
+			{
+				entX[i] = entX[i] + 1;
+			}
+			if(entX[0] < entX[i] && entX[i] > 0)
+			{
+				entX[i] = entX[i] - 1;
+			}
+			if(entY[0] < entY[i] && entY[i] > 0)
+			{
+				entY[i] = entY[i] - 1;
+			}
+			if(entY[0] - 20 > entY[i] && entY[i] < 540)
+			{
+				entY[i] = entY[i] + 1;
+			}
+			}
+			gfx.DrawSprite( entX[i], entY[i],&enemy1 );
+			
+
+		}
+
 
 		if (entMem[i] == 2)
 		{
@@ -525,6 +543,30 @@ void Game::loadEnt()
 				entY[i] = 599;
 			}
 
+
+			for(int k = 0; k<1000;k++)
+			{
+				
+				if(entMem[k] == 4) 
+				{
+					
+					if(entH[k] > 0)//right
+					{
+					
+					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + 50)
+					{
+						
+						if(entY[i] - 16 < entY[k] + 80 && entY[i] > entY[k])
+						{
+							entH[k] = 0;
+							
+						}
+					}
+				}
+				}
+			}
+
+
 			for(int k = 0; k<1000;k++)
 			{
 				
@@ -535,11 +577,6 @@ void Game::loadEnt()
 					{
 					
 					if(entX[i] > entX[k] && entX[i] - 12 < entX[k] + entV[k])
-<<<<<<< HEAD
-					{
-						
-						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
-=======
 					{
 						
 						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
@@ -558,41 +595,11 @@ void Game::loadEnt()
 						
 						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
 						{
-							lineUp(60,400,400,255,0,0,1,60);
-							//entH[i] = 0;
-						}
-					}
-				}
-
-						if(entF[k] == 0) //up
-					{
-					
-					if(entX[i] > entX[k] && entX[i] - 12 < entX[k])
-					{
-						
-						if(entY[i] - 16 < entY[k] && entY[i] + entV[k] > entY[k])
->>>>>>> origin/master
-						{
 							
 							entH[i] = 0;
 						}
 					}
 				}
-<<<<<<< HEAD
-					
-					if(entF[k] == 3) //left
-					{
-					
-					if(entX[i] > entX[k] - entV[k] && entX[i] - 12 < entX[k])
-					{
-						
-						if(entY[i] > entY[k] && entY[i] - 16 < entY[k])
-						{
-							lineUp(60,400,400,255,0,0,1,60);
-							//entH[i] = 0;
-						}
-					}
-				}
 
 						if(entF[k] == 0) //up
 					{
@@ -606,8 +613,6 @@ void Game::loadEnt()
 						}
 					}
 				}
-=======
->>>>>>> origin/master
 
 					if(entF[k] == 2) //down
 					{
@@ -634,15 +639,8 @@ void Game::loadEnt()
 
 			if(entH[i] == 0)
 			{
-<<<<<<< HEAD
 				gameOver();
 				
-=======
-				//gameOver();
-				entX[i] = 400;
-				entY[i] = 400;
-				entH[i] = 100;
->>>>>>> origin/master
 			}
 
 
@@ -696,21 +694,17 @@ void Game::setUp()
 	{
 	entMem[i] = 0;
 	}
-
-	//Spawn(1,2,255,255,255,255);
-<<<<<<< HEAD
-	Spawn(1,3,1,0,0,0,0);
-	Spawn(1,1,20,255,0,0,1);
-=======
 	Spawn(1,3,0,0,0,0,0);
-	Spawn(3,1,20,255,0,0,1);
->>>>>>> origin/master
+
+
 	
 }
 
 
 void Game::verWatermark(int x, int y)
 {
+	if(version == 0.1)
+	{
 	gfx.PutPixel(x-2,y,188,188,188); //v
 	gfx.PutPixel(x-3,y-1,188,188,188);
 	lineUp(3,x-4,y-2,188,188,188,0,1);
@@ -727,21 +721,49 @@ void Game::verWatermark(int x, int y)
 	lineRight(1,x+13,y,188,188,188,0,1); //point
 
 	lineUp(6,x+16,y,188,188,188,0,1); //1
+	}
+	else
+	{
+		lineRight(16,x,y,255,0,0,1,5);
+		
+	}
 }
 
 
 void Game::ComposeFrame()
 {
-	if (f == 1)
+	if (firstTime == true)
 	{
+		fRun = 1;
 		setUp();
-		f = 0;
+		firstTime = false;
 	}
 
+	//loadStage(stageNum);
 	
-	loadEnt();
+
+
+	
 	if(dev){verWatermark(10,7);}
 	
-	//lineRight(200,400,400,255,0,0,false,200);
-    //writeGameOver();
+	
 }
+
+
+//END OF TECHINCAL AND MECHANICAL STUFF, ONLY LEVELING AND ITEM DESCRIPTIONS
+//=====================================================================================================
+
+void Game::loadStage(int stageNum) //stageLoader
+{
+	stageDone = false;
+	if(stageNum == 0)
+	{
+	//	stage1();
+	}
+	if(stageNum == 2)
+	{
+		//stage2();
+	}
+	
+}
+

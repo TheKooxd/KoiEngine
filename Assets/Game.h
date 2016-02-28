@@ -23,6 +23,7 @@
 #include "D3DGraphics.h"
 #include "Keyboard.h"
 
+
 class Game
 {
 public:
@@ -47,11 +48,18 @@ private:
 	void gameOver();
 	void writeGameOver();
 	void verWatermark(int x, int y);
+	void loadStage(int stageNum);
+	void stage1();
+	void stage2();
 	
+
 private:
 	D3DGraphics gfx;
 	KeyboardClient kbd;
+	D3DCOLOR surface[ 50 * 80 ];
+	D3DCOLOR surface1[ 80 * 128];
 	int x;
+	int getEnemyHealth(int type, int option);
 	int y;
 	int l;
 	int xt;
@@ -80,10 +88,19 @@ private:
 	bool spawned;
 	bool loaded;
 	int f;
-	//const char printConsole[100];
 	double version;
 	int temp;
 	int tempX;
 	int tempY;
 	bool dev;
+	Sprite dude;
+	int a;
+	bool firstTime;
+	int stageNum;
+	bool stageDone;
+	int fRun;
+	bool enemies;
+	Sprite enemy1;
+	Sprite wall1;
+	Sprite wall2;
 };

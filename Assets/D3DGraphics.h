@@ -22,12 +22,26 @@
 
 #include <d3d9.h>
 
+
+
+	struct Sprite
+	{
+		unsigned int width;
+		unsigned int height;
+		D3DCOLOR key;
+		D3DCOLOR* surface;
+	};
+
+	void loadSprite( Sprite* sprite,D3DCOLOR* surface,const char* filename,
+		unsigned int width, unsigned int height,D3DCOLOR key );
 class D3DGraphics
 {
 public:
 	D3DGraphics( HWND hWnd );
 	~D3DGraphics();
 	void PutPixel( int x,int y,int r,int g,int b );
+	void PutPixel( int x,int y,D3DCOLOR c );
+	void DrawSprite( int x,int y,Sprite* sprite );
 	void BeginFrame();
 	void EndFrame();
 private:

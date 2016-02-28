@@ -19,6 +19,17 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #include "D3DGraphics.h"
+#include "Bitmap.h"
+
+	void loadSprite( Sprite* sprite,D3DCOLOR* surface,const char* filename,
+		unsigned int width, unsigned int height,D3DCOLOR key )
+	{
+	LoadBmp( filename,surface );
+	sprite->height = height;
+	sprite->width = width;
+	sprite->key = key;
+	sprite->surface = surface;
+	}
 
 D3DGraphics::D3DGraphics( HWND hWnd )
 {
@@ -66,6 +77,13 @@ void D3DGraphics::PutPixel( int x,int y,int r,int g,int b ) //edited 20.02.2016 
 	
 }
 
+void D3DGraphics::PutPixel( int x,int y,D3DCOLOR c ) //edited 20.02.2016 (Optimized)
+{	
+	((D3DCOLOR*)backRect.pBits)[ x + (backRect.Pitch >> 2) * y ] = c;
+	
+}
+
+
 void D3DGraphics::BeginFrame()
 {
 	pDevice->Clear( 0,NULL,D3DCLEAR_TARGET,D3DCOLOR_XRGB(0,0,0),0.0f,0 );
@@ -80,4 +98,24 @@ void D3DGraphics::EndFrame()
 	pBackBuffer->UnlockRect();
 	//DONE
 	pDevice->Present( NULL,NULL,NULL,NULL );
+}
+
+
+
+
+void D3DGraphics::DrawSprite( int xoff,int yoff,Sprite* sprite )
+{
+	for( int y = 0; y < sprite->height; y++ )
+	{
+		for( int x = 0; x < sprite->width; x++ )
+		{
+			D3DCOLOR c = sprite->surface[ x + y * sprite->width ];
+			if( c != sprite->key )
+			{
+			PutPixel( x + xoff,y + yoff,c );
+			}
+		}
+
+
+	}
 }
